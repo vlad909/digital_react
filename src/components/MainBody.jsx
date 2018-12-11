@@ -101,6 +101,7 @@ class MainBody extends React.Component {
                 <li key={index}> {index} => {_}</li>
             )
         }) : '';
+        /*todo красива, вывести индекс и выбранное число с вероятностями */
         // let max_el = () => {
         //     let max = Math.max(...this.state.result);
         //     return (
