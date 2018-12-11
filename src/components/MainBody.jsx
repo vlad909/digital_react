@@ -135,8 +135,8 @@ class MainBody extends React.Component {
                     let image = context.getImageData(0, 0,
                         this.saveCanvas.canvas.drawing.width, this.saveCanvas.canvas.drawing.height)
                     let grayscaleImg = this.imageDataToGrayscale(image)
-                    var boundingRectangle = this.getBoundingRectangle(grayscaleImg, 0.01);
-                    var trans = this.centerImage(grayscaleImg)
+                    let boundingRectangle = this.getBoundingRectangle(grayscaleImg, 0.01);
+                    let trans = this.centerImage(grayscaleImg)
                     this.hiddenCanvas.width = image.width
                     this.hiddenCanvas.height = image.height
                     let copyCtx = this.hiddenCanvas.getContext('2d')
@@ -155,12 +155,12 @@ class MainBody extends React.Component {
                     grayscaleImg = this.imageDataToGrayscale(image);
                     // console.log(grayscaleImg, 'gray')
                     // this.setState({byteImage: image})
-                    var nnInput = new Array(784), nnInput2 = [];
-                    for (var y = 0; y < 28; y++) {
-                        for (var x = 0; x < 28; x++) {
-                            var mean = 0;
-                            for (var v = 0; v < 10; v++) {
-                                for (var h = 0; h < 10; h++) {
+                    let nnInput = new Array(784), nnInput2 = [];
+                    for (let y = 0; y < 28; y++) {
+                        for (let x = 0; x < 28; x++) {
+                            let mean = 0;
+                            for (let v = 0; v < 10; v++) {
+                                for (let h = 0; h < 10; h++) {
                                     mean += grayscaleImg[y * 10 + v][x * 10 + h];
                                 }
                             }
@@ -173,12 +173,12 @@ class MainBody extends React.Component {
                     if (true) {
                         context.clearRect(0, 0, this.saveCanvas.canvas.drawing.width, this.saveCanvas.canvas.drawing.height);
                         context.drawImage(this.hiddenCanvas.getContext('2d').canvas, 0, 0);
-                        for (var y = 0; y < 28; y++) {
-                            for (var x = 0; x < 28; x++) {
-                                var block = context.getImageData(x * 10, y * 10, 10, 10);
-                                var newVal = 255 * (0.5 - nnInput[x * 28 + y] / 2);
+                        for (let y = 0; y < 28; y++) {
+                            for (let x = 0; x < 28; x++) {
+                                let block = context.getImageData(x * 10, y * 10, 10, 10);
+                                let newVal = 255 * (0.5 - nnInput[x * 28 + y] / 2);
                                 nnInput2.push(Math.round((255 - newVal) / 255 * 100) / 100);
-                                for (var i = 0; i < 4 * 10 * 10; i += 4) {
+                                for (let i = 0; i < 4 * 10 * 10; i += 4) {
                                     block.data[i] = newVal;
                                     block.data[i + 1] = newVal;
                                     block.data[i + 2] = newVal;
