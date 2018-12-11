@@ -59,22 +59,26 @@ class MainBody extends React.Component {
                 <li key={index}> {index} => {_}</li>
             )
         }) : '';
-        let max_el = () => {
-            let max = Math.max(...this.state.result);
-            return (
-                <ul>
-                    <li>max : {max}</li>
-                    <li>число : {this.state.result.findIndex(_ => _ === max)}</li>
-                </ul>
-            )
-        }
+        // let max_el = () => {
+        //     let max = Math.max(...this.state.result);
+        //     return (
+        //         <ul>
+        //             <li>max : {max}</li>
+        //             <li>число : {this.state.result.findIndex(_ => _ === max)}</li>
+        //         </ul>
+        //     )
+        // }
         return (
             <div className="mid">
                 <canvas ref={hidden => this.hiddenCanvas = hidden} width="280" height="280"></canvas>
                 <p className="header-p">Draw here</p>
-                <CanvasDraw className="canvas" style={{
+                <CanvasDraw className="canvas"
+                            brushColor="black"
+                            brushRadius={13}
+                            hideGrid={true}
+                            style={{
                     'margin': '10px 50px',
-                    'border': '1px black solid',
+                    'border': '5px black solid',
                     width: '280px',
                     height: '280px'
                 }}
