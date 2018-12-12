@@ -6,4 +6,25 @@
     margin: 10px 0;
     border: 1px black solid;
     background-color: white;
+    align-self: flex-end;
+}
+
+.main-size-btn {
+    min-width: 85px;
+}
+
+.result-table {
+    list-style: none;
+    max-height: 320px;
+    width: 450px;
+    background: white;
+    padding: 0 5px;
+}
+
+.result-table li {
+    border: 1px black solid;
+    width: 100%;
+    color: black;
+    font-weight: bold;
+    margin: 5px 0;
 }

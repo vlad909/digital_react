@@ -178,52 +178,68 @@ class MainBody extends React.Component {
         )
     }
 
+    gradientCreator = (percent) => {
+        let rounded = (percent * 100).toFixed(4)
+        return {
+            background: `linear-gradient(to right, #28a745 ${rounded}%, transparent ${rounded}%)`
+        }
+    }
+
     render() {
         let result = this.state.result ? this.state.result.map((_, index) => {
             return (
                 <li key={index}> {index} => {_}</li>
             )
         }) : '';
+        let table_result = this.state.result.length ? this.state.result.map((el, index) => {
+            return (
+                <li key={index} style={this.gradientCreator(el)}>
+                    {index} => {el.toFixed(4)}
+                </li>
+            )
+        }) : ''
         /*todo красива, вывести индекс и выбранное число с вероятностями */
-        // let max_el = () => {
-        //     let max = Math.max(...this.state.result);
-        //     return (
-        //         <ul>
-        //             <li>max : {max}</li>
-        //             <li>число : {this.state.result.findIndex(_ => _ === max)}</li>
-        //         </ul>
-        //     )
-        // }
         return (
             <div className="container-fluid">
                 <canvas ref={hidden => this.hiddenCanvas = hidden} width="280" height="280"
                         style={{display: 'none'}}/>
-                <p className="header-p">Draw here</p>
-                <div className={"d-flex justify-content-start align-items-end"}>
-                    <CanvasDraw brushColor="black"
-                                brushRadius={10}
-                                hideGrid={true}
-                                canvasWidth={280}
-                                canvasHeight={280}
-                                style={{
-                                    'margin': '10px 50px',
-                                    'border': '5px black solid'
-                                }}
-                                ref={canvasDraw => {
-                                    this.saveCanvas = canvasDraw
-                                }}/>
-                    <canvas className={"small-canvas"}
-                            width="28" height="28" ref={small => this.smallCanvas = small}/>
+                <h4 className="text-left ml-2 mt-2 mb-0">Draw here: </h4>
+                <div className="d-flex justify-content-start">
+                    <div className={"d-flex justify-content-start align-items-start"}>
+                        <CanvasDraw brushColor="black"
+                                    brushRadius={10}
+                                    hideGrid={true}
+                                    canvasWidth={280}
+                                    canvasHeight={280}
+                                    style={{
+                                        'margin': '10px 5px',
+                                        'border': '3px black solid'
+                                    }}
+                                    ref={canvasDraw => {
+                                        this.saveCanvas = canvasDraw
+                                    }}/>
+                        <canvas className={"small-canvas"}
+                                width="28" height="28" ref={small => this.smallCanvas = small}/>
+                    </div>
+                    <div className="d-flex flex-column align-items-start">
+                        <ul className={"result-table"}>
+                            {table_result}
+                        </ul>
+                    </div>
                 </div>
 
-                <button type="button" className={"btn btn-success"} onClick={this.knowingImageFromCanvas}>
-                    what's happen?
-                </button>
-                <button type="button" className={"btn btn-danger"} onClick={() => {
-                    this.saveCanvas.clear()
-                }}>clear
-                </button>
-                {this.renderMax()}
+                <div className={"d-flex justify-content-start ml-2"} style={{width: '300px'}}>
+                    <button type="button" className={"btn btn-success main-size-btn"}
+                            onClick={this.knowingImageFromCanvas}>
+                        What's?
+                    </button>
+                    <button type="button" className={"btn btn-danger main-size-btn ml-3"} onClick={() => {
+                        this.saveCanvas.clear()
+                    }}>Clear
+                    </button>
+                </div>
+
+                {/*{this.renderMax()}*/}
                 {result}
             </div>
         )
