@@ -153,6 +153,7 @@ class MainBody extends React.Component {
             for (let x = 0; x < imgData.width; x++) {
                 let offset = y * 4 * imgData.width + 4 * x;
                 let alpha = imgData.data[offset + 3];
+                // console.log(alpha, 'alp')
                 // weird: when painting with stroke, alpha == 0 means white;
                 // alpha > 0 is a grayscale value; in that case I simply take the R value
                 if (alpha == 0) {
@@ -203,7 +204,7 @@ class MainBody extends React.Component {
         return (
             <div className="mid">
                 <canvas ref={hidden => this.hiddenCanvas = hidden} width="280" height="280"
-                        style={{display: 'none'}}></canvas>
+                        style={{display: 'none'}}/>
                 <p className="header-p">Draw here</p>
                 <CanvasDraw className="canvas"
                             brushColor="black"
@@ -227,7 +228,7 @@ class MainBody extends React.Component {
                 }}>clear
                 </button>
                 <canvas style={{'margin': '10px 50px', 'border': '1px red solid'}}
-                        width="28" height="28" ref={small => this.smallCanvas = small}></canvas>
+                        width="28" height="28" ref={small => this.smallCanvas = small}/>
                 {this.renderMax()}
                 {result}
             </div>
