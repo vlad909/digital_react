@@ -4,18 +4,12 @@ import '../container.css'
 import brain from 'brain.js'
 import trainData from '../assets/data/mnistTrain.json'
 
-// const net = new brain.NeuralNetwork();
-// net.fromJSON(trainData);
 
 class MainBody extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            byteImage: 'bla',
-            net: '',
-            json: '',
             result: [],
-            max_obj: {}
         }
     }
 
@@ -205,7 +199,7 @@ class MainBody extends React.Component {
                 <canvas ref={hidden => this.hiddenCanvas = hidden} width="280" height="280"
                         style={{display: 'none'}}/>
                 <p className="header-p">Draw here</p>
-                <div className="d-flex justify-content-start align-items-end">
+                <div className={"d-flex justify-content-start align-items-end"}>
                     <CanvasDraw brushColor="black"
                                 brushRadius={10}
                                 hideGrid={true}
@@ -221,7 +215,7 @@ class MainBody extends React.Component {
                     <canvas className={"small-canvas"}
                             width="28" height="28" ref={small => this.smallCanvas = small}/>
                 </div>
-                {/*<p>byte {this.state.byteImage}</p>*/}
+
                 <button type="button" className={"btn btn-success"} onClick={this.knowingImageFromCanvas}>
                     what's happen?
                 </button>

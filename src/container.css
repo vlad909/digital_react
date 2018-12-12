@@ -3,6 +3,7 @@
 }
 
 .small-canvas {
-    margin: 10px 50px;
-    border: 1px red solid;
+    margin: 10px 0;
+    border: 1px black solid;
+    background-color: white;
 }
