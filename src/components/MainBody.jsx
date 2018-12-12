@@ -9,7 +9,7 @@ class MainBody extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            result: [],
+            result: []
         }
     }
 
@@ -172,9 +172,7 @@ class MainBody extends React.Component {
         let max = Math.max(...this.state.result)
         return (
             this.state.result.length ? (
-                <ul>
-                    <li> max:{this.state.result.findIndex(el => el === max)} => {max}%</li>
-                </ul>) : 'Almost empty'
+                <h1> this is {this.state.result.findIndex(el => el === max)}</h1>) : 'Almost empty. Draw something'
         )
     }
 
@@ -194,7 +192,7 @@ class MainBody extends React.Component {
         let table_result = this.state.result.length ? this.state.result.map((el, index) => {
             return (
                 <li key={index} style={this.gradientCreator(el)}>
-                    {index} => {el.toFixed(4)}
+                    {index} => {(el * 100).toFixed(4)}%
                 </li>
             )
         }) : ''
@@ -239,8 +237,7 @@ class MainBody extends React.Component {
                     </button>
                 </div>
 
-                {/*{this.renderMax()}*/}
-                {result}
+                {this.renderMax()}
             </div>
         )
     }
