@@ -153,10 +153,9 @@ class MainBody extends React.Component {
             for (let x = 0; x < imgData.width; x++) {
                 let offset = y * 4 * imgData.width + 4 * x;
                 let alpha = imgData.data[offset + 3];
-                // console.log(alpha, 'alp')
                 // weird: when painting with stroke, alpha == 0 means white;
                 // alpha > 0 is a grayscale value; in that case I simply take the R value
-                if (alpha == 0) {
+                if (alpha === 0) {
                     imgData.data[offset] = 255;
                     imgData.data[offset + 1] = 255;
                     imgData.data[offset + 2] = 255;
@@ -202,7 +201,7 @@ class MainBody extends React.Component {
         //     )
         // }
         return (
-            <div className="mid">
+            <div className={"container-fluid"}>
                 <canvas ref={hidden => this.hiddenCanvas = hidden} width="280" height="280"
                         style={{display: 'none'}}/>
                 <p className="header-p">Draw here</p>
