@@ -1,7 +1,8 @@
-
-.canvas{
-    margin: 0 auto;
-}
 .header-p {
     height: 10px;
+}
+
+.small-canvas {
+    margin: 10px 50px;
+    border: 1px red solid;
 }

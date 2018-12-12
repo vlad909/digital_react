@@ -201,23 +201,26 @@ class MainBody extends React.Component {
         //     )
         // }
         return (
-            <div className={"container-fluid"}>
+            <div className="container-fluid">
                 <canvas ref={hidden => this.hiddenCanvas = hidden} width="280" height="280"
                         style={{display: 'none'}}/>
                 <p className="header-p">Draw here</p>
-                <CanvasDraw className="canvas"
-                            brushColor="black"
-                            brushRadius={10}
-                            hideGrid={true}
-                            style={{
-                                'margin': '10px 50px',
-                                'border': '5px black solid',
-                                width: '280px',
-                                height: '280px'
-                            }}
-                            ref={canvasDraw => {
-                                this.saveCanvas = canvasDraw
-                            }}/>
+                <div className="d-flex justify-content-start align-items-end">
+                    <CanvasDraw brushColor="black"
+                                brushRadius={10}
+                                hideGrid={true}
+                                canvasWidth={280}
+                                canvasHeight={280}
+                                style={{
+                                    'margin': '10px 50px',
+                                    'border': '5px black solid'
+                                }}
+                                ref={canvasDraw => {
+                                    this.saveCanvas = canvasDraw
+                                }}/>
+                    <canvas className={"small-canvas"}
+                            width="28" height="28" ref={small => this.smallCanvas = small}/>
+                </div>
                 {/*<p>byte {this.state.byteImage}</p>*/}
                 <button type="button" className={"btn btn-success"} onClick={this.knowingImageFromCanvas}>
                     what's happen?
@@ -226,8 +229,6 @@ class MainBody extends React.Component {
                     this.saveCanvas.clear()
                 }}>clear
                 </button>
-                <canvas style={{'margin': '10px 50px', 'border': '1px red solid'}}
-                        width="28" height="28" ref={small => this.smallCanvas = small}/>
                 {this.renderMax()}
                 {result}
             </div>
