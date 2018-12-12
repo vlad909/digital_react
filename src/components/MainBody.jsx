@@ -4,8 +4,8 @@ import '../container.css'
 import brain from 'brain.js'
 import trainData from '../assets/data/mnistTrain.json'
 
-const net = new brain.NeuralNetwork();
-net.fromJSON(trainData);
+// const net = new brain.NeuralNetwork();
+// net.fromJSON(trainData);
 
 class MainBody extends React.Component {
     constructor(props) {
@@ -19,15 +19,17 @@ class MainBody extends React.Component {
         }
     }
 
-    centerImage(img) {
-        var meanX = 0;
-        var meanY = 0;
-        var rows = img.length;
-        var columns = img[0].length;
-        var sumPixels = 0;
-        for (var y = 0; y < rows; y++) {
-            for (var x = 0; x < columns; x++) {
-                var pixel = (1 - img[y][x]);
+    net = new brain.NeuralNetwork()
+
+    centerImage = (img) => {
+        let meanX = 0;
+        let meanY = 0;
+        let rows = img.length;
+        let columns = img[0].length;
+        let sumPixels = 0;
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < columns; x++) {
+                let pixel = (1 - img[y][x]);
                 sumPixels += pixel;
                 meanY += y * pixel;
                 meanX += x * pixel;
@@ -36,20 +38,20 @@ class MainBody extends React.Component {
         meanX /= sumPixels;
         meanY /= sumPixels;
 
-        var dY = Math.round(rows / 2 - meanY);
-        var dX = Math.round(columns / 2 - meanX);
+        let dY = Math.round(rows / 2 - meanY);
+        let dX = Math.round(columns / 2 - meanX);
         return {transX: dX, transY: dY};
     }
 
-    getBoundingRectangle(img, threshold) {
-        var rows = img.length;
-        var columns = img[0].length;
-        var minX = columns;
-        var minY = rows;
-        var maxX = -1;
-        var maxY = -1;
-        for (var y = 0; y < rows; y++) {
-            for (var x = 0; x < columns; x++) {
+    getBoundingRectangle = (img, threshold) => {
+        let rows = img.length;
+        let columns = img[0].length;
+        let minX = columns;
+        let minY = rows;
+        let maxX = -1;
+        let maxY = -1;
+        for (let y = 0; y < rows; y++) {
+            for (let x = 0; x < columns; x++) {
                 if (img[y][x] < threshold) {
                     if (minX > x) minX = x;
                     if (maxX < x) maxX = x;
@@ -60,34 +62,8 @@ class MainBody extends React.Component {
         }
         return {minY: minY, minX: minX, maxY: maxY, maxX: maxX};
     }
-
-    knowingImageFromCanvas = () => {
-        // console.log(this.saveCanvas, 'fsd')
-        let context = this.saveCanvas.ctx.drawing
-        let image = context.getImageData(0, 0,
-            this.saveCanvas.canvas.drawing.width, this.saveCanvas.canvas.drawing.height)
-        let grayscaleImg = this.imageDataToGrayscale(image)
-        let boundingRectangle = this.getBoundingRectangle(grayscaleImg, 0.01);
-        let trans = this.centerImage(grayscaleImg)
-        this.hiddenCanvas.width = image.width
-        this.hiddenCanvas.height = image.height
-        let copyCtx = this.hiddenCanvas.getContext('2d')
-        let brW = boundingRectangle.maxX + 1 - boundingRectangle.minX;
-        let brH = boundingRectangle.maxY + 1 - boundingRectangle.minY;
-        let scaling = 190 / (brW > brH ? brW : brH);
-        // scale
-        copyCtx.translate(this.saveCanvas.canvas.drawing.width / 2, this.saveCanvas.canvas.drawing.height / 2);
-        copyCtx.scale(scaling, scaling);
-        copyCtx.translate(-this.saveCanvas.canvas.drawing.width / 2, -this.saveCanvas.canvas.drawing.height / 2);
-        // translate to center of mass
-        copyCtx.translate(trans.transX, trans.transY);
-
-        copyCtx.drawImage(context.canvas, 0, 0);
-        image = copyCtx.getImageData(0, 0, 280, 280);
-        grayscaleImg = this.imageDataToGrayscale(image);
-        // console.log(grayscaleImg, 'gray')
-        // this.setState({byteImage: image})
-        let nnInput = new Array(784), nnInput2 = [];
+    toByteArrayIn28 = (grayscaleImg) => {
+        let nnInput = []
         for (let y = 0; y < 28; y++) {
             for (let x = 0; x < 28; x++) {
                 let mean = 0;
@@ -100,44 +76,83 @@ class MainBody extends React.Component {
                 nnInput[x * 28 + y] = (mean - .5) / .5;
             }
         }
-        let thumbnailCtx = this.smallCanvas.getContext('2d')
-        let thumbnail = thumbnailCtx.getImageData(0, 0, 28, 28);
-        if (true) {
-            context.clearRect(0, 0, this.saveCanvas.canvas.drawing.width, this.saveCanvas.canvas.drawing.height);
-            context.drawImage(this.hiddenCanvas.getContext('2d').canvas, 0, 0);
-            for (let y = 0; y < 28; y++) {
-                for (let x = 0; x < 28; x++) {
-                    let block = context.getImageData(x * 10, y * 10, 10, 10);
-                    let newVal = 255 * (0.5 - nnInput[x * 28 + y] / 2);
-                    nnInput2.push(Math.round((255 - newVal) / 255 * 100) / 100);
-                    for (let i = 0; i < 4 * 10 * 10; i += 4) {
-                        block.data[i] = newVal;
-                        block.data[i + 1] = newVal;
-                        block.data[i + 2] = newVal;
-                        block.data[i + 3] = 255;
-                    }
-                    context.putImageData(block, x * 10, y * 10);
+        return nnInput
 
-                    thumbnail.data[(y * 28 + x) * 4] = newVal;
-                    thumbnail.data[(y * 28 + x) * 4 + 1] = newVal;
-                    thumbnail.data[(y * 28 + x) * 4 + 2] = newVal;
-                    thumbnail.data[(y * 28 + x) * 4 + 3] = 255;
+    }
+    $28ByteCodeToImage = (context /* контекст главного*/, thumbnail /* 28*28 image canv*/, nnInput) => {
+        let nnInput2 = []
+        for (let y = 0; y < 28; y++) {
+            for (let x = 0; x < 28; x++) {
+                let block = context.getImageData(x * 10, y * 10, 10, 10);
+                let newVal = 255 * (0.5 - nnInput[x * 28 + y] / 2);
+                nnInput2.push(Math.round((255 - newVal) / 255 * 100) / 100);
+                for (let i = 0; i < 4 * 10 * 10; i += 4) {
+                    block.data[i] = newVal;
+                    block.data[i + 1] = newVal;
+                    block.data[i + 2] = newVal;
+                    block.data[i + 3] = 255;
                 }
+                context.putImageData(block, x * 10, y * 10);
+
+                thumbnail.data[(y * 28 + x) * 4] = newVal;
+                thumbnail.data[(y * 28 + x) * 4 + 1] = newVal;
+                thumbnail.data[(y * 28 + x) * 4 + 2] = newVal;
+                thumbnail.data[(y * 28 + x) * 4 + 3] = 255;
             }
         }
-        thumbnailCtx.putImageData(thumbnail, 0, 0);
-        this.setState({
-            result: net.run(nnInput2),
+        return {
+            thumbnail: thumbnail,
+            nnInput2: nnInput2
+        }
+    }
+    knowingImageFromCanvas = () => {
+        let context = this.saveCanvas.ctx.drawing //контекст реакт канвы (основная)
+        let image = context.getImageData(0, 0,
+            this.saveCanvas.canvas.drawing.width, this.saveCanvas.canvas.drawing.height) // побитовый массив
+        let grayscaleImg = this.imageDataToGrayscale(image) //перевод полученного изображения в сервый
+        let boundingRectangle = this.getBoundingRectangle(grayscaleImg, 0.01); //серое изображение ограничивается квадратом
+        let trans = this.centerImage(grayscaleImg) //поиск центра массы для центрирования
+        //скрытая канва
+        this.hiddenCanvas.width = image.width
+        this.hiddenCanvas.height = image.height
+        let copyCtx = this.hiddenCanvas.getContext('2d') // её контекст
+        let brW = boundingRectangle.maxX + 1 - boundingRectangle.minX; //ширина по центрированным значениям
+        let brH = boundingRectangle.maxY + 1 - boundingRectangle.minY; //высота по центрированным значениям
+        let scaling = 190 / (brW > brH ? brW : brH); // масштаб
+        // масштабьирование и перенос
+        copyCtx.translate(this.saveCanvas.canvas.drawing.width / 2, this.saveCanvas.canvas.drawing.height / 2);
+        copyCtx.scale(scaling, scaling);
+        copyCtx.translate(-this.saveCanvas.canvas.drawing.width / 2, -this.saveCanvas.canvas.drawing.height / 2);
+        // translate to center of mass
+        copyCtx.translate(trans.transX, trans.transY);
+
+        copyCtx.drawImage(context.canvas, 0, 0); //орисовка изображения центрировааного в невидмой копии
+        image = copyCtx.getImageData(0, 0, 280, 280);  // присвоение побитового массива сс невидимой канвы основной канве
+        grayscaleImg = this.imageDataToGrayscale(image); //перевод в 255.255.255
+
+        let nnInput = this.toByteArrayIn28(grayscaleImg) // перегон значений в 28х28
+
+        let thumbnailCtx = this.smallCanvas.getContext('2d') // контекст маленькой канвы
+        let thumbnail = thumbnailCtx.getImageData(0, 0, 28, 28); //битовый массив маленькой канвы
+        this.saveCanvas.clear() //очистка основной канвы
+        context.drawImage(this.hiddenCanvas.getContext('2d').canvas, 0, 0); //отрисовка со скрытой канвы в основной
+
+        let resultBy28Byte = this.$28ByteCodeToImage(context, thumbnail, nnInput)
+        thumbnail = resultBy28Byte.thumbnail
+        let nnInput2 = resultBy28Byte.nnInput2 //получение побитвого массива 28*28
+        thumbnailCtx.putImageData(thumbnail, 0, 0); //отрисовка 28*28 канвы
+        this.setState({ //скормили нейронке
+            result: this.net.run(nnInput2),
         })
     }
 
-    imageDataToGrayscale(imgData) {
-        var grayscaleImg = [];
-        for (var y = 0; y < imgData.height; y++) {
+    imageDataToGrayscale = (imgData) => {
+        let grayscaleImg = [];
+        for (let y = 0; y < imgData.height; y++) {
             grayscaleImg[y] = [];
-            for (var x = 0; x < imgData.width; x++) {
-                var offset = y * 4 * imgData.width + 4 * x;
-                var alpha = imgData.data[offset + 3];
+            for (let x = 0; x < imgData.width; x++) {
+                let offset = y * 4 * imgData.width + 4 * x;
+                let alpha = imgData.data[offset + 3];
                 // weird: when painting with stroke, alpha == 0 means white;
                 // alpha > 0 is a grayscale value; in that case I simply take the R value
                 if (alpha == 0) {
@@ -148,7 +163,7 @@ class MainBody extends React.Component {
                 imgData.data[offset + 3] = 255;
                 // simply take red channel value. Not correct, but works for
                 // black or white images.
-                grayscaleImg[y][x] = imgData.data[y * 4 * imgData.width + x * 4 + 0] / 255;
+                grayscaleImg[y][x] = imgData.data[y * 4 * imgData.width + x * 4] / 255;
             }
         }
         return grayscaleImg;
@@ -156,14 +171,7 @@ class MainBody extends React.Component {
 
 
     componentDidMount() {
-        // let net = new brain.NeuralNetwork()
-        // net.fromJSON(trainData)
-        // this.setState({
-        //     net: new brain.NeuralNetwork()
-        // })
-        // this.setState({
-        //     json: this.state.net.fromJSON(trainData)
-        // })
+        this.net.fromJSON(trainData)
     }
 
     renderMax() { //max element index + %
@@ -211,10 +219,10 @@ class MainBody extends React.Component {
                                 this.saveCanvas = canvasDraw
                             }}/>
                 {/*<p>byte {this.state.byteImage}</p>*/}
-                <button type="button" onClick={this.knowingImageFromCanvas}>
-                    wat is?
+                <button type="button" className={"btn btn-success"} onClick={this.knowingImageFromCanvas}>
+                    what's happen?
                 </button>
-                <button type="button" onClick={() => {
+                <button type="button" className={"btn btn-danger"} onClick={() => {
                     this.saveCanvas.clear()
                 }}>clear
                 </button>
